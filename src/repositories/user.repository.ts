@@ -1,70 +1,100 @@
-import User from "../models/User";
-import { Document } from "mongoose";
-import { PrismaClient } from "@prisma/client";
+import {
+  PrismaClient,
+  User as PrismaUser,
+  Role,
+  Enrollment,
+} from "@prisma/client";
 const prisma = new PrismaClient();
-
-interface UserDocument {
-  id: string;
-  fullName: string;
-  email: string;
-  dateOfBirth: String;
-  phoneNumber: String;
-  enrollmentDate: String;
-  major: String;
-  verificationToken: String;
-  isVerified: Boolean;
-  role: String;
-  enrollments: String;
-}
+import { UserDocument, UserUpdateInput } from "../types/InputTypes";
+// Define the interface for the user data
 
 class UserRepository {
   // Find all users
   async findAll(): Promise<UserDocument[]> {
-    return await User.find();
+    const users = await prisma.user.findMany({
+      include: { enrollments: true }, // Include related enrollments if needed
+    });
+    return users as UserDocument[];
   }
 
   // Find user by ID
   async findById(id: string): Promise<UserDocument | null> {
-    return await User.findById(id);
+    const user = await prisma.user.findUnique({
+      where: { id },
+      include: { enrollments: true }, // Ensure enrollments are fetched
+    });
+    return user as UserDocument | null;
   }
 
   // Create a new user
   async createUser({
-    username,
-    password,
+    fullName,
     email,
+    dateOfBirth,
+    phoneNumber,
+    enrollmentDate,
+    major,
+    role,
   }: {
-    username: string;
-    password: string;
+    fullName: string;
     email: string;
+    dateOfBirth: Date;
+    phoneNumber: string;
+    enrollmentDate: Date;
+    major: string;
+    role: Role;
   }): Promise<UserDocument> {
-    const user = await User.create({
-      username,
-      password,
-      email,
+    const user = await prisma.user.create({
+      data: {
+        fullName,
+        email,
+        dateOfBirth,
+        phoneNumber,
+        enrollmentDate,
+        major,
+        role,
+      },
     });
-    return user;
+    return user as UserDocument;
   }
 
-  // Update a user by ID
+  // Update a user by ID, including nested enrollments
   async update(
     id: string,
-    updatedUser: Partial<UserDocument>
+    updatedUser: Partial<UserUpdateInput>
   ): Promise<UserDocument | null> {
-    return await User.findByIdAndUpdate(id, updatedUser, {
-      new: true,
-      runValidators: true,
+    const updated = await prisma.user.update({
+      where: { id },
+      data: {
+        ...updatedUser,
+        enrollments: updatedUser.enrollments
+          ? {
+              create: updatedUser.enrollments?.create,
+              connect: updatedUser.enrollments?.connect,
+              disconnect: updatedUser.enrollments?.disconnect,
+            }
+          : undefined,
+      },
+      include: { enrollments: true }, // Optionally include enrollments
     });
+    return updated as UserDocument;
   }
 
   // Delete a user by ID
   async delete(id: string): Promise<UserDocument | null> {
-    return await User.findByIdAndDelete(id);
+    const user = await prisma.user.delete({
+      where: { id },
+    });
+    return user as UserDocument;
   }
 
-  // Find user by username
-  async getUserByUsername(username: string): Promise<UserDocument | null> {
-    return await User.findOne({ username });
+  // Find user by email
+  async findByEmail(email: string): Promise<UserDocument | null> {
+    const user = await prisma.user.findUnique({
+      where: { email },
+      include: { enrollments: true },
+    });
+    return user as UserDocument | null;
   }
 }
 
