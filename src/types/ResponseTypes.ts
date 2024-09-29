@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import { UserDocument } from "./InputTypes";
 
 // Define various response types
 export type LoginResponse = {
@@ -16,7 +16,7 @@ export type CreateUserResponse = {
   status: string;
   error: boolean;
   statusCode: number;
-  user: { username: string; email: string };
+  user: { fullName: string; email: string };
 };
 
 export type DeleteUserResponse = {
@@ -31,15 +31,10 @@ export type GetUserResponse = {
   error: boolean;
   statusCode: number;
   message: string;
-  data?: User | null;
+  data?: UserDocument | null;
 };
 // substitute for extend
-export type UserDocument = mongoose.Document & {
-  username: string;
-  email: string;
-  password: string;
-  _id: mongoose.Types.ObjectId;
-};
+
 export type UserServiceResponse = {
   status: string;
   statusCode: number; // Make statusCode optional

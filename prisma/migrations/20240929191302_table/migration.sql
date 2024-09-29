@@ -11,6 +11,7 @@ CREATE TYPE "CourseStatus" AS ENUM ('APPROVED', 'PENDING');
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
     "fullName" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "dateOfBirth" TIMESTAMP(3) NOT NULL,
     "phoneNumber" TEXT NOT NULL,

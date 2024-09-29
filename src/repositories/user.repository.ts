@@ -30,29 +30,35 @@ class UserRepository {
   async createUser({
     fullName,
     email,
+    password,
     dateOfBirth,
     phoneNumber,
     enrollmentDate,
     major,
     role,
+    verificationToken,
   }: {
     fullName: string;
     email: string;
+    password: string;
     dateOfBirth: Date;
     phoneNumber: string;
     enrollmentDate: Date;
     major: string;
     role: Role;
+    verificationToken: string;
   }): Promise<UserDocument> {
     const user = await prisma.user.create({
       data: {
         fullName,
         email,
+        password,
         dateOfBirth,
         phoneNumber,
         enrollmentDate,
         major,
         role,
+        verificationToken,
       },
     });
     return user as UserDocument;

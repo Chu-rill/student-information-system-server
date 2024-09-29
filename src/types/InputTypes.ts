@@ -3,6 +3,7 @@ interface UserDocument extends PrismaUser {
   id: string;
   fullName: string;
   email: string;
+  password: string;
   dateOfBirth: Date;
   phoneNumber: string;
   enrollmentDate: Date;
@@ -17,6 +18,7 @@ interface UserDocument extends PrismaUser {
 interface UserUpdateInput {
   fullName?: string;
   email?: string;
+  password?: string;
   dateOfBirth?: Date;
   phoneNumber?: string;
   enrollmentDate?: Date;

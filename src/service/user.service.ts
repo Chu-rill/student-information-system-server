@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import { comparePassword, encrypt } from "../utils/encryption";
+import { generateVerificationToken } from "../utils/randomTokenGenerator";
 import {
   passwordMismatchError,
   doesNotExistError,
@@ -14,12 +15,13 @@ import {
   DeleteUserResponse,
   GetUserResponse,
   User,
-  UserDocument,
 } from "../types/ResponseTypes";
+import { Role } from "@prisma/client";
+import { UserDocument, UserUpdateInput } from "../types/InputTypes";
 
 class UserService {
   async loginUser(
-    username: string,
+    email: string,
     password: string
   ): Promise<
     | LoginResponse
@@ -28,16 +30,16 @@ class UserService {
     | typeof defaultError
   > {
     try {
-      const user = (await userRepository.getUserByUsername(
-        username
-      )) as UserDocument;
+      const user = (await userRepository.findByEmail(email)) as UserDocument;
       if (!user) return doesNotExistError;
 
       const isPasswordCorrect = await comparePassword(password, user.password);
       if (!isPasswordCorrect) return passwordMismatchError;
 
-      const userId = user._id.toString();
-      const payload = { username: user.username, id: userId };
+      let { password: userPassword, ...userWithoutPassword } = user;
+      const payload = {
+        ...userWithoutPassword, // Spread the rest of the user properties
+      };
 
       const token = jwt.sign(payload, process.env.JWT_SECRET!, {
         expiresIn: process.env.JWT_LIFETIME,
@@ -47,7 +49,7 @@ class UserService {
         status: "success",
         error: false,
         statusCode: httpStatus.OK,
-        user: { username: user.username, id: userId }, // Ensure _id is a string
+        user: { username: user.fullName, id: user.id }, // Ensure _id is a string
         token,
       };
     } catch (error) {
@@ -57,21 +59,36 @@ class UserService {
   }
 
   async createUser(
-    username: string,
+    fullName: string,
     password: string,
-    email: string
+    email: string,
+    dateOfBirth: Date,
+    phoneNumber: string,
+    enrollmentDate: Date,
+    major: string,
+    role: Role
   ): Promise<
     CreateUserResponse | typeof noDuplicateError | typeof defaultError
   > {
     try {
-      const existingUser = await userRepository.getUserByUsername(username);
+      const existingUser = await userRepository.findByEmail(email);
       if (existingUser) return noDuplicateError;
 
       const hashedPassword = await encrypt(password);
+
+      // Generate a random verification token
+      const verificationToken = generateVerificationToken();
+
       const user = await userRepository.createUser({
-        username,
+        fullName,
         password: hashedPassword,
         email,
+        dateOfBirth,
+        phoneNumber,
+        enrollmentDate,
+        major,
+        role,
+        verificationToken, // Add generated verification token
       });
 
       if (!user) return defaultError;
@@ -80,7 +97,7 @@ class UserService {
         status: "success",
         error: false,
         statusCode: httpStatus.CREATED,
-        user: { username, email },
+        user: { fullName, email },
       };
     } catch (error) {
       console.error(error);
@@ -112,7 +129,7 @@ class UserService {
     error?: boolean;
     statusCode?: number;
     message: string;
-    data?: User[];
+    data?: UserDocument[];
   }> {
     try {
       const users = await userRepository.findAll();
@@ -155,36 +172,34 @@ class UserService {
 
   async updateUser(
     id: string,
-    updateData: Partial<User>
+    updateData: Partial<UserUpdateInput>
   ): Promise<
     | {
         status: string;
         error: boolean;
         statusCode: number;
         message: string;
-        data?: User;
+        data?: UserDocument;
       }
     | { status: string; message: string }
   > {
     try {
       const user = await userRepository.findById(id);
 
-      // Check if the user exists
       if (!user) {
         return {
           status: "error",
-          statusCode: 404,
+          statusCode: httpStatus.NOT_FOUND,
           message: "No user found.",
         };
       }
 
-      // Update the user details
       const updatedUser = await userRepository.update(id, updateData);
 
       if (!updatedUser) {
         return {
           status: "error",
-          statusCode: 400,
+          statusCode: httpStatus.BAD_REQUEST,
           message: "Failed to update user.",
         };
       }
