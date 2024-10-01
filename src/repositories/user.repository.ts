@@ -33,7 +33,6 @@ class UserRepository {
     password,
     dateOfBirth,
     phoneNumber,
-    enrollmentDate,
     major,
     role,
     verificationToken,
@@ -43,9 +42,8 @@ class UserRepository {
     password: string;
     dateOfBirth: Date;
     phoneNumber: string;
-    enrollmentDate: Date;
     major: string;
-    role: Role;
+    role?: Role;
     verificationToken: string;
   }): Promise<UserDocument> {
     const user = await prisma.user.create({
@@ -55,7 +53,6 @@ class UserRepository {
         password,
         dateOfBirth,
         phoneNumber,
-        enrollmentDate,
         major,
         role,
         verificationToken,

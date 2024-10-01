@@ -20,7 +20,7 @@ model User {
   email             String       @unique
   dateOfBirth       DateTime
   phoneNumber       String
-  enrollmentDate    DateTime
+  enrollmentDate    DateTime     @default(now())
   major             String
   verificationToken String?
   isVerified        Boolean      @default(false)

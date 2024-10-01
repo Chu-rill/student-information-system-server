@@ -64,7 +64,6 @@ class UserService {
     email: string,
     dateOfBirth: Date,
     phoneNumber: string,
-    enrollmentDate: Date,
     major: string,
     role: Role
   ): Promise<
@@ -85,7 +84,6 @@ class UserService {
         email,
         dateOfBirth,
         phoneNumber,
-        enrollmentDate,
         major,
         role,
         verificationToken, // Add generated verification token
@@ -97,7 +95,7 @@ class UserService {
         status: "success",
         error: false,
         statusCode: httpStatus.CREATED,
-        user: { fullName, email },
+        user: { fullName, email, major, role },
       };
     } catch (error) {
       console.error(error);

@@ -16,7 +16,7 @@ export type CreateUserResponse = {
   status: string;
   error: boolean;
   statusCode: number;
-  user: { fullName: string; email: string };
+  user: { fullName: string; email: string; major: string; role: string };
 };
 
 export type DeleteUserResponse = {

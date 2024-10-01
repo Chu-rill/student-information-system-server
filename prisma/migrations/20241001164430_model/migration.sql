@@ -15,7 +15,7 @@ CREATE TABLE "User" (
     "email" TEXT NOT NULL,
     "dateOfBirth" TIMESTAMP(3) NOT NULL,
     "phoneNumber" TEXT NOT NULL,
-    "enrollmentDate" TIMESTAMP(3) NOT NULL,
+    "enrollmentDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "major" TEXT NOT NULL,
     "verificationToken" TEXT,
     "isVerified" BOOLEAN NOT NULL DEFAULT false,

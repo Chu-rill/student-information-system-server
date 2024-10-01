@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 
 const protect = async (req: Request, res: Response, next: NextFunction) => {
   let token;
@@ -10,24 +11,34 @@ const protect = async (req: Request, res: Response, next: NextFunction) => {
     req.headers.authorization.startsWith("Bearer")
   ) {
     try {
-      // Extract token from the Bearer token in the Authorization header
       token = req.headers.authorization.split(" ")[1];
-
-      // Verify the token using the JWT_SECRET
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = await prisma.user.findUnique({
+        where: {
+          id: decoded.id, // Ensure this matches the token payload
+        },
+        select: {
+          id: true,
+          fullName: true,
+          email: true,
+          dateOfBirth: true,
+          phoneNumber: true,
+          major: true,
+          role: true,
+          // Exclude password
+        },
+      });
+      if (!req.user) {
+        return res.status(401).json({ message: "User not found" });
+      }
 
-      // Find the user from the database based on the decoded token (without password)
-      req.user = await User.findById(decoded.id).select("-password");
-
-      // Proceed to the next middleware or route handler
       next();
-    } catch (err) {
-      console.error("Token verification failed", err);
-      return res.status(401).json({ message: "Not authorized, token failed" });
+    } catch (error) {
+      console.error(error);
+      res.status(401).json({ message: "Token verification failed" });
     }
   } else {
-    return res.status(401).json({ message: "Not authorized, no token" });
+    res.status(401).json({ message: "Not authorized, no token" });
   }
 };
-
 export { protect };

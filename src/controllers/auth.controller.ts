@@ -4,9 +4,9 @@ import emailService from "../utils/email"; // Ensure the emailService is exporte
 
 class AuthController {
   async login(req: Request, res: Response): Promise<Response> {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
     try {
-      const response = await userService.loginUser(username, password);
+      const response = await userService.loginUser(email, password);
       return res.status(response.statusCode).send(response);
     } catch (err) {
       console.error("Login error:", err);
@@ -15,16 +15,25 @@ class AuthController {
   }
 
   async signup(req: Request, res: Response): Promise<Response> {
-    const { username, password, email } = req.body;
+    const { fullName, password, email, dateOfBirth, phoneNumber, major, role } =
+      req.body;
     try {
-      const response = await userService.createUser(username, password, email);
+      const response = await userService.createUser(
+        fullName,
+        password,
+        email,
+        new Date(dateOfBirth),
+        phoneNumber,
+        major,
+        role
+      );
       if (response.error) {
         return res.status(response.statusCode).json(response);
       }
 
       const data = {
         subject: "Welcome to Express Template",
-        username: username,
+        username: fullName,
       };
       await emailService.sendEmailWithTemplate(email, data);
       return res.status(response.statusCode).send(response);
