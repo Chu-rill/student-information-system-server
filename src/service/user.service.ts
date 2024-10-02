@@ -1,6 +1,5 @@
 import jwt from "jsonwebtoken";
 import { comparePassword, encrypt } from "../utils/encryption";
-import { generateVerificationToken } from "../utils/randomTokenGenerator";
 import {
   passwordMismatchError,
   doesNotExistError,
@@ -34,6 +33,8 @@ class UserService {
       if (!user) return doesNotExistError;
 
       const isPasswordCorrect = await comparePassword(password, user.password);
+      console.log(isPasswordCorrect);
+
       if (!isPasswordCorrect) return passwordMismatchError;
 
       let { password: userPassword, ...userWithoutPassword } = user;
@@ -75,9 +76,6 @@ class UserService {
 
       const hashedPassword = await encrypt(password);
 
-      // Generate a random verification token
-      const verificationToken = generateVerificationToken();
-
       const user = await userRepository.createUser({
         fullName,
         password: hashedPassword,
@@ -86,7 +84,6 @@ class UserService {
         phoneNumber,
         major,
         role,
-        verificationToken, // Add generated verification token
       });
 
       if (!user) return defaultError;
@@ -95,7 +92,14 @@ class UserService {
         status: "success",
         error: false,
         statusCode: httpStatus.CREATED,
-        user: { fullName, email, major, role },
+        message: "Signup successful, OTP sent to your email",
+        user: {
+          id: user.id,
+          fullName: user.fullName,
+          email: user.email,
+          major: user.major,
+          role: user.role,
+        },
       };
     } catch (error) {
       console.error(error);

@@ -23,7 +23,7 @@ class EmailService {
     });
 
     // Define the path to the email template
-    this.welcomeTemplatePath = path.join(__dirname, "../views/welcome.hbs");
+    this.welcomeTemplatePath = path.join(__dirname, "../views/validate.hbs");
   }
 
   // Method to read the email template file
@@ -60,7 +60,7 @@ class EmailService {
   // Method to send an email using a template
   public async sendEmailWithTemplate(
     email: string,
-    data: { subject: string; username: string }
+    data: { subject: string; username: string; OTP: string }
   ): Promise<void> {
     try {
       // Read and compile the template
@@ -72,9 +72,10 @@ class EmailService {
         to: email,
         subject: data.subject,
         html: emailTemplate({
-          PlatformName: "Express Template",
+          PlatformName: "Student information system",
           Username: data.username,
           title: "Welcome Email",
+          OTP: data.OTP,
         }),
       });
 

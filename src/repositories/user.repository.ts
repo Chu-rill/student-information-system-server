@@ -12,7 +12,17 @@ class UserRepository {
   // Find all users
   async findAll(): Promise<UserDocument[]> {
     const users = await prisma.user.findMany({
-      include: { enrollments: true }, // Include related enrollments if needed
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        dateOfBirth: true,
+        phoneNumber: true,
+        major: true,
+        role: true,
+        enrollments: true,
+        // Exclude password
+      },
     });
     return users as UserDocument[];
   }
@@ -21,7 +31,17 @@ class UserRepository {
   async findById(id: string): Promise<UserDocument | null> {
     const user = await prisma.user.findUnique({
       where: { id },
-      include: { enrollments: true }, // Ensure enrollments are fetched
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        dateOfBirth: true,
+        phoneNumber: true,
+        major: true,
+        role: true,
+        enrollments: true,
+        // Exclude password
+      },
     });
     return user as UserDocument | null;
   }
@@ -35,7 +55,6 @@ class UserRepository {
     phoneNumber,
     major,
     role,
-    verificationToken,
   }: {
     fullName: string;
     email: string;
@@ -44,20 +63,23 @@ class UserRepository {
     phoneNumber: string;
     major: string;
     role?: Role;
-    verificationToken: string;
   }): Promise<UserDocument> {
+    // Trim and convert fullName and password to lowercase
+    const trimmedFullName = fullName.trim();
+    const trimmedPassword = password.trim().toLowerCase();
+
     const user = await prisma.user.create({
       data: {
-        fullName,
+        fullName: trimmedFullName,
         email,
-        password,
+        password: trimmedPassword,
         dateOfBirth,
         phoneNumber,
         major,
         role,
-        verificationToken,
       },
     });
+
     return user as UserDocument;
   }
 

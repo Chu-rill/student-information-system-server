@@ -17,8 +17,9 @@ CREATE TABLE "User" (
     "phoneNumber" TEXT NOT NULL,
     "enrollmentDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "major" TEXT NOT NULL,
-    "verificationToken" TEXT,
     "isVerified" BOOLEAN NOT NULL DEFAULT false,
+    "otp" TEXT,
+    "otpExpiration" TIMESTAMP(3),
     "role" "Role" NOT NULL DEFAULT 'STUDENT',
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")

@@ -1,6 +1,8 @@
 import { Request, Response } from "express"; // Import Request and Response types
 import userService from "../service/user.service"; // Ensure the userService is exported correctly
 import emailService from "../utils/email"; // Ensure the emailService is exported correctly
+import { sendOTPToUser } from "../utils/otp";
+import { CreateUserResponse } from "../types/ResponseTypes";
 
 class AuthController {
   async login(req: Request, res: Response): Promise<Response> {
@@ -17,6 +19,7 @@ class AuthController {
   async signup(req: Request, res: Response): Promise<Response> {
     const { fullName, password, email, dateOfBirth, phoneNumber, major, role } =
       req.body;
+
     try {
       const response = await userService.createUser(
         fullName,
@@ -27,15 +30,31 @@ class AuthController {
         major,
         role
       );
+
       if (response.error) {
         return res.status(response.statusCode).json(response);
       }
 
+      const userId = (response as CreateUserResponse).user.id;
+
+      // Await the OTP generation and sending process
+      const otp = await sendOTPToUser(userId); // Now resolves to a string
+      if (!otp) {
+        // Handle the error case where OTP could not be sent
+        return res.status(500).json({ message: "Failed to send OTP" });
+      }
+
+      // Prepare the email data
       const data = {
-        subject: "Welcome to Express Template",
+        subject: "Student information system validation",
         username: fullName,
+        OTP: otp, // This is now a string
       };
+
+      // Await the email sending process
       await emailService.sendEmailWithTemplate(email, data);
+
+      // Return successful response
       return res.status(response.statusCode).send(response);
     } catch (err) {
       console.error("Signup error:", err);

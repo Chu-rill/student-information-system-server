@@ -6,7 +6,6 @@ import dotenv from "dotenv";
 import rateLimit from "express-rate-limit";
 import userRoutes from "./routes/user.routes";
 import authRoutes from "./routes/auth.routes";
-import { connectDB } from "./utils/db";
 
 // Load environment variables
 dotenv.config();
@@ -48,5 +47,4 @@ app.use("/api/v1/auth", authRoutes);
 // Start server and connect to the database
 app.listen(port, () => {
   console.log(`Server started on port ${port}`);
-  connectDB();
 });

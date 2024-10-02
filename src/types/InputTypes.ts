@@ -8,7 +8,6 @@ interface UserDocument extends PrismaUser {
   phoneNumber: string;
   enrollmentDate: Date;
   major: string;
-  verificationToken: string | null; // Match Prisma schema
   isVerified: boolean;
   role: Role; // Should use Role enum type, not string
   enrollments: Enrollment[]; // Adjust this to the appropriate type if necessary
@@ -30,4 +29,5 @@ interface UserUpdateInput {
     disconnect?: { id: string }[];
   };
 }
+
 export { UserDocument, UserUpdateInput };
