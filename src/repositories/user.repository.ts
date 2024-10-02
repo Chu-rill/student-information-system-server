@@ -64,15 +64,11 @@ class UserRepository {
     major: string;
     role?: Role;
   }): Promise<UserDocument> {
-    // Trim and convert fullName and password to lowercase
-    const trimmedFullName = fullName.trim();
-    const trimmedPassword = password.trim().toLowerCase();
-
     const user = await prisma.user.create({
       data: {
-        fullName: trimmedFullName,
+        fullName,
         email,
-        password: trimmedPassword,
+        password,
         dateOfBirth,
         phoneNumber,
         major,
@@ -107,6 +103,7 @@ class UserRepository {
 
   // Delete a user by ID
   async delete(id: string): Promise<UserDocument | null> {
+    console.log(`User ID from request in repository: ${id}`);
     const user = await prisma.user.delete({
       where: { id },
     });

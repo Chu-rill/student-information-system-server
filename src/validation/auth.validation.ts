@@ -31,6 +31,9 @@ export const register_query_validator = Joi.object({
   major: Joi.string().optional().messages({
     "string.base": "Major must be a string",
   }),
+  role: Joi.string().optional().messages({
+    "string.base": "Role must be a string",
+  }),
 });
 
 // Login validator schema

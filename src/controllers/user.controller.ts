@@ -9,6 +9,7 @@ class UserController {
   // Delete user method
   async deleteUser(req: Request, res: Response): Promise<Response> {
     const { id } = req.params;
+
     try {
       const response: UserServiceResponse = await userService.deleteUser(id);
 
@@ -39,6 +40,7 @@ class UserController {
   // Get a specific user by id
   async getUser(req: Request, res: Response): Promise<Response> {
     const { id } = req.params;
+
     try {
       const response: UserServiceResponse = await userService.getUser(id);
 

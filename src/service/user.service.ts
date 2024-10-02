@@ -31,9 +31,13 @@ class UserService {
     try {
       const user = (await userRepository.findByEmail(email)) as UserDocument;
       if (!user) return doesNotExistError;
+      // const hashedPassword = await encrypt(password);
+      const trimmedPassword = password.trim().toLowerCase();
 
-      const isPasswordCorrect = await comparePassword(password, user.password);
-      console.log(isPasswordCorrect);
+      const isPasswordCorrect = await comparePassword(
+        trimmedPassword,
+        user.password
+      );
 
       if (!isPasswordCorrect) return passwordMismatchError;
 
@@ -73,11 +77,13 @@ class UserService {
     try {
       const existingUser = await userRepository.findByEmail(email);
       if (existingUser) return noDuplicateError;
+      const trimmedFullName = fullName.trim();
+      const trimmedPassword = password.trim().toLowerCase();
 
-      const hashedPassword = await encrypt(password);
+      const hashedPassword = await encrypt(trimmedPassword);
 
       const user = await userRepository.createUser({
-        fullName,
+        fullName: trimmedFullName,
         password: hashedPassword,
         email,
         dateOfBirth,
