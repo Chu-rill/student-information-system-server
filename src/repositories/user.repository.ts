@@ -118,6 +118,13 @@ class UserRepository {
     });
     return user as UserDocument | null;
   }
+  async findOTP(userId: string): Promise<UserDocument | null> {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { otp: true, otpExpiration: true },
+    });
+    return user as UserDocument | null;
+  }
 }
 
 export default new UserRepository();

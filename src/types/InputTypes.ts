@@ -21,6 +21,8 @@ interface UserUpdateInput {
   dateOfBirth?: Date;
   phoneNumber?: string;
   enrollmentDate?: Date;
+  otp?: string | null;
+  otpExpiration?: Date | null;
   major?: string;
   role?: Role;
   enrollments?: {

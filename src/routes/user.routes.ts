@@ -6,7 +6,7 @@ const userRoutes = Router();
 
 userRoutes.get("/users", protect, userController.getAllUsers);
 userRoutes.get("/user/:id", protect, userController.getUser);
-userRoutes.put("/user/:id", protect, userController.updateUser);
-userRoutes.delete("/user/:id", protect, userController.deleteUser);
+userRoutes.put("/update-user/:id", protect, userController.updateUser);
+userRoutes.delete("/delete-user/:id", protect, userController.deleteUser);
 
 export default userRoutes;

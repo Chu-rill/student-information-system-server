@@ -2,7 +2,10 @@ import { Request, Response } from "express"; // Import Request and Response type
 import userService from "../service/user.service"; // Ensure the userService is exported correctly
 import emailService from "../utils/email"; // Ensure the emailService is exported correctly
 import { sendOTPToUser } from "../utils/otp";
-import { CreateUserResponse } from "../types/ResponseTypes";
+import {
+  CreateUserResponse,
+  UserServiceResponse,
+} from "../types/ResponseTypes";
 
 class AuthController {
   async login(req: Request, res: Response): Promise<Response> {
@@ -59,6 +62,24 @@ class AuthController {
     } catch (err) {
       console.error("Signup error:", err);
       return res.status(500).json({ message: "Internal server error" });
+    }
+  }
+  //validate otp
+  async validateOTP(req: Request, res: Response): Promise<Response> {
+    const { id } = req.params;
+    const OTP = req.body;
+    try {
+      const response: UserServiceResponse | any = await userService.validateOTP(
+        id,
+        OTP
+      );
+      return res.status(response.statusCode).send(response);
+    } catch (error) {
+      console.error("Validate OTP error:", error);
+      return res.status(500).json({
+        status: "error",
+        message: "Internal server error",
+      });
     }
   }
 }

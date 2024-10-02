@@ -70,8 +70,6 @@ class UserController {
       });
     }
   }
-
-  //validate otp
 }
 
 export default new UserController();

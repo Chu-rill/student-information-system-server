@@ -224,6 +224,55 @@ class UserService {
       return defaultError;
     }
   }
+
+  async validateOTP(
+    userId: string,
+    inputOTP: string
+  ): Promise<
+    | {
+        status: string;
+        error: boolean;
+        statusCode: number;
+        message: string;
+        data?: UserDocument;
+      }
+    | { status: string; message: string }
+  > {
+    try {
+      const user = await userRepository.findOTP(userId);
+
+      if (!user) {
+        throw new Error("OTP not found");
+      }
+
+      // Check if OTP is correct and not expired
+      const isOTPValid =
+        user.otp === inputOTP &&
+        user.otpExpiration !== null &&
+        new Date() < new Date(user.otpExpiration);
+
+      if (!isOTPValid) {
+        return {
+          status: "error",
+          statusCode: httpStatus.BAD_REQUEST,
+          message: "Failed to validate OTP.",
+        };
+      }
+
+      let data = { otp: null, otpExpiration: null };
+      // Clear the OTP after successful validation
+      await userRepository.update(userId, data);
+      return {
+        status: "success",
+        error: false,
+        statusCode: httpStatus.OK,
+        message: "OTP Validted successfully",
+      };
+    } catch (error) {
+      console.error(`Error validating OTP for user ${userId}:`, error);
+      return defaultError;
+    }
+  }
 }
 
 export default new UserService();
