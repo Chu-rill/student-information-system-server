@@ -40,6 +40,7 @@ class UserRepository {
         major: true,
         role: true,
         enrollments: true,
+        isVerified: true,
         // Exclude password
       },
     });

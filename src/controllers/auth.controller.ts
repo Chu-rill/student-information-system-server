@@ -67,7 +67,7 @@ class AuthController {
   //validate otp
   async validateOTP(req: Request, res: Response): Promise<Response> {
     const { id } = req.params;
-    const OTP = req.body;
+    const { OTP } = req.body;
     try {
       const response: UserServiceResponse | any = await userService.validateOTP(
         id,
@@ -80,6 +80,31 @@ class AuthController {
         status: "error",
         message: "Internal server error",
       });
+    }
+  }
+
+  async RequestOTP(req: Request, res: Response): Promise<Response> {
+    const { id, fullName, email } = req.body;
+    try {
+      // Await the OTP generation and sending process
+      const otp = await sendOTPToUser(id); // Now resolves to a string
+      if (!otp) {
+        // Handle the error case where OTP could not be sent
+        return res.status(500).json({ message: "Failed to send OTP" });
+      }
+      const data = {
+        subject: "Student information system validation",
+        username: fullName,
+        OTP: otp, // This is now a string
+      };
+
+      await emailService.sendEmailWithTemplate(email, data);
+
+      // Return successful response
+      return res.status(200).json({ message: "OTP sent to User" });
+    } catch (error) {
+      console.error("Request OTP error:", error);
+      return res.status(500).json({ message: "Internal server error" });
     }
   }
 }

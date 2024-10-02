@@ -24,6 +24,7 @@ interface UserUpdateInput {
   otp?: string | null;
   otpExpiration?: Date | null;
   major?: string;
+  isVerified?: boolean;
   role?: Role;
   enrollments?: {
     create?: Enrollment[];

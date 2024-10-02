@@ -239,13 +239,17 @@ class UserService {
     | { status: string; message: string }
   > {
     try {
+      // console.log(`Received OTP: ${inputOTP}`);
       const user = await userRepository.findOTP(userId);
 
       if (!user) {
         throw new Error("OTP not found");
       }
+      // console.log(`OTP in DB: ${user.otp}`);
+      // console.log(`OTP expiration in DB: ${user.otpExpiration}`);
 
       // Check if OTP is correct and not expired
+
       const isOTPValid =
         user.otp === inputOTP &&
         user.otpExpiration !== null &&
@@ -259,7 +263,7 @@ class UserService {
         };
       }
 
-      let data = { otp: null, otpExpiration: null };
+      let data = { otp: null, otpExpiration: null, isVerified: true };
       // Clear the OTP after successful validation
       await userRepository.update(userId, data);
       return {

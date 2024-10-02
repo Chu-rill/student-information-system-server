@@ -19,6 +19,7 @@ authRoutes.post(
   validateSchema(login_query_validator), // Use the named import
   authController.login
 );
-authRoutes.post("/validate-otp", protect, authController.validateOTP);
+authRoutes.post("/validate-otp/:id", authController.validateOTP);
+authRoutes.post("/request-otp", authController.RequestOTP);
 
 export default authRoutes;
