@@ -38,7 +38,7 @@ class AuthController {
         return res.status(response.statusCode).json(response);
       }
 
-      const userId = (response as CreateUserResponse).user.id;
+      const userId = (response as CreateUserResponse).data.id;
 
       // Await the OTP generation and sending process
       const otp = await sendOTPToUser(userId); // Now resolves to a string
@@ -83,27 +83,52 @@ class AuthController {
     }
   }
 
-  async RequestOTP(req: Request, res: Response): Promise<Response> {
-    const { id, fullName, email } = req.body;
+  async ResetPassword(req: Request, res: Response): Promise<Response> {
+    const { id } = req.params;
+    const { email } = req.body;
     try {
-      // Await the OTP generation and sending process
-      const otp = await sendOTPToUser(id); // Now resolves to a string
+      const otp = await sendOTPToUser(id); // Generate OTP
+
       if (!otp) {
-        // Handle the error case where OTP could not be sent
         return res.status(500).json({ message: "Failed to send OTP" });
       }
+
       const data = {
-        subject: "Student information system validation",
-        username: fullName,
-        OTP: otp, // This is now a string
+        subject: "Reset Your Password",
+        OTP: otp, // Send OTP to the user's email
       };
 
-      await emailService.sendEmailWithTemplate(email, data);
+      await emailService.sendResetPasswordEmail(email, data); // Send email with OTP
 
-      // Return successful response
       return res.status(200).json({ message: "OTP sent to User" });
     } catch (error) {
-      console.error("Request OTP error:", error);
+      console.error("Reset Password OTP error:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  async confirmResetPassword(req: Request, res: Response): Promise<Response> {
+    const { id } = req.params;
+    const { OTP, newPassword } = req.body; // Receive OTP, user id, and new password
+
+    try {
+      // Step 1: Validate OTP
+      const isValidOTP = await userService.validateOTP(id, OTP); // Validate OTP using the service
+
+      if (!isValidOTP) {
+        return res.status(400).json({ message: "Invalid OTP" });
+      }
+
+      // Step 2: If OTP is valid, update the password
+      const passwordUpdated = await userService.updatePassword(id, newPassword); // Update user's password
+
+      if (!passwordUpdated) {
+        return res.status(500).json({ message: "Failed to update password" });
+      }
+
+      return res.status(200).json({ message: "Password successfully updated" });
+    } catch (error) {
+      console.error("Confirm Reset Password error:", error);
       return res.status(500).json({ message: "Internal server error" });
     }
   }

@@ -1,15 +1,30 @@
 import { Router } from "express";
 import userController from "../controllers/user.controller";
-import { protect } from "../middleware/jwt";
-import { isAdmin } from "../middleware/isAdmin";
-
+import { protect, isAdmin } from "../middleware/authorize";
+import { validateSchema } from "../middleware/ValidationMiddleware";
+import {
+  deleteUserValidation,
+  getUserValidation,
+  updateUserValidation,
+} from "../validation/user.validation";
 const userRoutes = Router();
 
 userRoutes.get("/users", protect, isAdmin, userController.getAllUsers);
-userRoutes.get("/user/:id", protect, userController.getUser);
-userRoutes.put("/update-user/:id", protect, userController.updateUser);
+userRoutes.get(
+  "/user/:id",
+  validateSchema(getUserValidation),
+  protect,
+  userController.getUser
+);
+userRoutes.put(
+  "/update-user/:id",
+  validateSchema(updateUserValidation),
+  protect,
+  userController.updateUser
+);
 userRoutes.delete(
   "/delete-user/:id",
+  validateSchema(deleteUserValidation),
   protect,
   isAdmin,
   userController.deleteUser

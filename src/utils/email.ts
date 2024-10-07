@@ -1,20 +1,20 @@
-import nodemailer from "nodemailer"; // Use ES module syntax for imports
+import nodemailer from "nodemailer";
 import fs from "fs/promises";
 import handlebars from "handlebars";
 import path from "path";
 import dotenv from "dotenv";
 
-dotenv.config(); // Load environment variables
+dotenv.config();
 
 class EmailService {
-  private transporter: nodemailer.Transporter; // Define transporter type
-  private welcomeTemplatePath: string; // Define template path type
+  private transporter: nodemailer.Transporter;
+  private welcomeTemplatePath: string;
+  private resetPasswordTemplatePath: string;
 
   constructor() {
-    // Set up Nodemailer transport
     this.transporter = nodemailer.createTransport({
       host: process.env.EMAIL_PROVIDER,
-      port: Number(process.env.SERVICE_PORT), // Ensure port is a number
+      port: Number(process.env.SERVICE_PORT),
       secure: false,
       auth: {
         user: process.env.EMAIL_USER,
@@ -22,20 +22,23 @@ class EmailService {
       },
     });
 
-    // Define the path to the email template
     this.welcomeTemplatePath = path.join(__dirname, "../views/validate.hbs");
+    this.resetPasswordTemplatePath = path.join(
+      __dirname,
+      "../views/forgetPassword.hbs"
+    );
   }
 
-  // Method to read the email template file
-  private async readTemplateFile(): Promise<string> {
+  // Method to read the email template file based on a path
+  private async readTemplateFile(templatePath: string): Promise<string> {
     try {
-      return await fs.readFile(this.welcomeTemplatePath, "utf-8");
+      return await fs.readFile(templatePath, "utf-8");
     } catch (error) {
       throw new Error(`Error reading email template file: ${error}`);
     }
   }
 
-  // Method to send an email without using a template
+  // Method to send an email without a template
   public async sendEmail(
     email: string,
     data: { subject: string; text?: string }
@@ -45,7 +48,7 @@ class EmailService {
         from: process.env.EMAIL_USER,
         to: email,
         subject: data.subject,
-        text: data.text || "", // Optional plain text fallback
+        text: data.text || "",
       });
       console.log(`Message sent: ${info.response}`);
     } catch (error: unknown) {
@@ -57,14 +60,15 @@ class EmailService {
     }
   }
 
-  // Method to send an email using a template
+  // Method to send an email with the welcome template
   public async sendEmailWithTemplate(
     email: string,
     data: { subject: string; username: string; OTP: string }
   ): Promise<void> {
     try {
-      // Read and compile the template
-      const templateSource = await this.readTemplateFile();
+      const templateSource = await this.readTemplateFile(
+        this.welcomeTemplatePath
+      );
       const emailTemplate = handlebars.compile(templateSource);
 
       const info = await this.transporter.sendMail({
@@ -90,6 +94,39 @@ class EmailService {
       }
     }
   }
+
+  // Method to send a reset password email with a template
+  public async sendResetPasswordEmail(
+    email: string,
+    data: { subject: string; OTP: string }
+  ): Promise<void> {
+    try {
+      // Read and compile the reset password template
+      const templateSource = await this.readTemplateFile(
+        this.resetPasswordTemplatePath
+      );
+      const emailTemplate = handlebars.compile(templateSource);
+
+      const info = await this.transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: data.subject,
+        html: emailTemplate({
+          OTP: data.OTP, // Include OTP in the email template
+        }),
+      });
+
+      console.log(`Reset password email sent: ${info.response}`);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(`Error sending reset password email: ${error.message}`);
+      } else {
+        console.error(
+          "Unknown error occurred while sending reset password email"
+        );
+      }
+    }
+  }
 }
 
-export default new EmailService(); // Use ES module syntax to export
+export default new EmailService();

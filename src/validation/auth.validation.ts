@@ -1,7 +1,7 @@
 import Joi from "joi";
 
 // Register validator schema
-export const register_query_validator = Joi.object({
+export const register = Joi.object({
   fullName: Joi.string().required().messages({
     "string.base": "Full Name must be a string",
     "string.empty": "Full Name is required",
@@ -37,15 +37,62 @@ export const register_query_validator = Joi.object({
 });
 
 // Login validator schema
-export const login_query_validator = Joi.object({
+export const login = Joi.object({
   email: Joi.string().email().required().messages({
-    "string.base": "Username must be a string",
-    "string.empty": "Username is required",
-    "any.required": "Username is a required field",
+    "string.base": "Email must be a string",
+    "string.empty": "Email is required",
+    "any.required": "Email is a required field",
   }),
   password: Joi.string().required().messages({
     "string.base": "Password must be a string",
     "string.empty": "Password is required",
     "any.required": "Password is a required field",
+  }),
+});
+
+// validateOTP validator schema
+export const validateOTP = Joi.object({
+  id: Joi.string().required().messages({
+    "string.base": "ID must be a string",
+    "string.empty": "ID is required",
+    "any.required": "ID is a required field",
+  }),
+  OTP: Joi.number().required().messages({
+    "number.base": "OTP must be a number",
+    "number.empty": "OTP is required",
+    "any.required": "OTP is a required field",
+  }),
+});
+
+// ResetPassword validator schema
+export const ResetPassword = Joi.object({
+  id: Joi.string().required().messages({
+    "string.base": "ID must be a string",
+    "string.empty": "ID is required",
+    "any.required": "ID is a required field",
+  }),
+  email: Joi.string().email().required().messages({
+    "string.base": "Email must be a string",
+    "string.empty": "Email is required",
+    "any.required": "Email is a required field",
+  }),
+});
+
+// confirmResetPassword validator schema
+export const confirmResetPassword = Joi.object({
+  id: Joi.string().required().messages({
+    "string.base": "ID must be a string",
+    "string.empty": "ID is required",
+    "any.required": "ID is a required field",
+  }),
+  OTP: Joi.number().required().messages({
+    "number.base": "OTP must be a number",
+    "number.empty": "OTP is required",
+    "any.required": "OTP is a required field",
+  }),
+  newPassword: Joi.string().required().messages({
+    "string.base": "newPassword must be a string",
+    "string.empty": "newPassword is required",
+    "any.required": "newPassword is a required field",
   }),
 });

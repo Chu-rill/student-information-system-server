@@ -54,7 +54,7 @@ class UserService {
         status: "success",
         error: false,
         statusCode: httpStatus.OK,
-        user: { username: user.fullName, id: user.id }, // Ensure _id is a string
+        data: { username: user.fullName, id: user.id }, // Ensure _id is a string
         token,
       };
     } catch (error) {
@@ -99,7 +99,7 @@ class UserService {
         error: false,
         statusCode: httpStatus.CREATED,
         message: "Signup successful, OTP sent to your email",
-        user: {
+        data: {
           id: user.id,
           fullName: user.fullName,
           email: user.email,
@@ -274,6 +274,59 @@ class UserService {
       };
     } catch (error) {
       console.error(`Error validating OTP for user ${userId}:`, error);
+      return defaultError;
+    }
+  }
+
+  async updatePassword(
+    id: string,
+    newPassword: string
+  ): Promise<
+    | {
+        status: string;
+        error: boolean;
+        statusCode: number;
+        message: string;
+        data?: UserDocument;
+      }
+    | { status: string; message: string }
+  > {
+    try {
+      const user = await userRepository.findById(id);
+
+      if (!user) {
+        return {
+          status: "error",
+          statusCode: httpStatus.NOT_FOUND,
+          message: "No user found.",
+        };
+      }
+
+      // Hash the new password
+      const trimmedPassword = newPassword.trim().toLowerCase();
+      const hashedPassword = await encrypt(trimmedPassword);
+
+      const data = { password: hashedPassword };
+
+      const updatedUser = await userRepository.update(id, data);
+
+      if (!updatedUser) {
+        return {
+          status: "error",
+          statusCode: httpStatus.BAD_REQUEST,
+          message: "Failed to update user.",
+        };
+      }
+
+      return {
+        status: "success",
+        error: false,
+        statusCode: httpStatus.OK,
+        message: "User updated successfully",
+        data: updatedUser,
+      };
+    } catch (error) {
+      console.error(error);
       return defaultError;
     }
   }

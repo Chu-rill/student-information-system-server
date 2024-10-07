@@ -1,25 +1,42 @@
 import { Router } from "express";
 import authController from "../controllers/auth.controller";
 import {
-  login_query_validator,
-  register_query_validator,
+  confirmResetPassword,
+  login,
+  register,
+  ResetPassword,
+  validateOTP,
 } from "../validation/auth.validation";
 import { validateSchema } from "../middleware/ValidationMiddleware";
-import { protect } from "../middleware/jwt";
+import { authorizeChange, protect } from "../middleware/authorize";
 const authRoutes = Router();
 
 authRoutes.post(
   "/signup",
-  validateSchema(register_query_validator), // Use the named import
+  validateSchema(register), // Use the named import
   authController.signup
 );
 
 authRoutes.post(
   "/login",
-  validateSchema(login_query_validator), // Use the named import
+  validateSchema(login), // Use the named import
   authController.login
 );
-authRoutes.post("/validate-otp/:id", authController.validateOTP);
-authRoutes.post("/request-otp", authController.RequestOTP);
-
+authRoutes.post(
+  "/validate-otp/:id",
+  validateSchema(validateOTP),
+  authController.validateOTP
+);
+authRoutes.post(
+  "/reset-password/:id",
+  validateSchema(ResetPassword),
+  authorizeChange,
+  authController.ResetPassword
+);
+authRoutes.post(
+  "/confirm-reset-password/:id",
+  validateSchema(confirmResetPassword),
+  authorizeChange,
+  authController.confirmResetPassword
+);
 export default authRoutes;

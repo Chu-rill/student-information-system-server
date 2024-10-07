@@ -5,7 +5,7 @@ export type LoginResponse = {
   status: string;
   error: boolean;
   statusCode: number;
-  user: { username: string; id: string };
+  data: { username: string; id: string };
   token?: string;
 };
 export type User = {
@@ -16,7 +16,7 @@ export type CreateUserResponse = {
   status: string;
   error: boolean;
   statusCode: number;
-  user: {
+  data: {
     id: string;
     fullName: string;
     email: string;
