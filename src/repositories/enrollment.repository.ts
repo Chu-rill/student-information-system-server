@@ -1,49 +1,129 @@
-import { PrismaClient } from "@prisma/client";
-
+import { EnrollmentStatus, PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
-
+import { EnrollmentDocument, EnrollmentUpdateInput } from "../types/DBTypes";
 class EnrollmentRepository {
   // Find all enrollments
-  async findAll() {
-    return await prisma.enrollment.findMany({
-      include: {
-        student: true, // Include the related student (User)
-        course: true, // Include the related course
+  async findAll(): Promise<EnrollmentDocument[]> {
+    const enrollment = await prisma.enrollment.findMany({
+      select: {
+        id: true,
+        studentId: true,
+        courseId: true,
+        enrollmentDate: true,
+        status: true,
+        grades: true,
+        student: {
+          select: {
+            id: true,
+            fullName: true,
+            email: true,
+            major: true,
+          },
+        },
+        course: {
+          select: {
+            id: true,
+            courseName: true,
+            courseDescription: true,
+            department: true,
+            credits: true,
+          },
+        },
       },
     });
+    return enrollment as EnrollmentDocument[];
   }
 
   // Find enrollment by ID
-  async findById(id: string) {
-    return await prisma.enrollment.findUnique({
+  async findById(id: string): Promise<EnrollmentDocument | null> {
+    const enrollment = await prisma.enrollment.findUnique({
       where: { id },
-      include: {
-        student: true,
-        course: true,
+      select: {
+        id: true,
+        studentId: true,
+        courseId: true,
+        enrollmentDate: true,
+        status: true,
+        grades: true,
+        student: {
+          select: {
+            id: true,
+            fullName: true,
+            email: true,
+            major: true,
+          },
+        },
+        course: {
+          select: {
+            id: true,
+            courseName: true,
+            courseDescription: true,
+            department: true,
+            credits: true,
+          },
+        },
       },
     });
+    return enrollment as EnrollmentDocument | null;
   }
 
   // Create a new enrollment
-  async create(enrollmentData: any) {
-    return await prisma.enrollment.create({
-      data: enrollmentData,
+  async create({
+    studentId,
+    courseId,
+    enrollmentDate,
+    status,
+  }: {
+    studentId: string;
+    courseId: string;
+    enrollmentDate: Date;
+    status: EnrollmentStatus;
+  }): Promise<EnrollmentDocument> {
+    const enrollment = await prisma.enrollment.create({
+      data: {
+        studentId, // Foreign key to the User model
+        courseId, // Foreign key to the Course model
+        enrollmentDate,
+        status,
+      },
     });
+
+    return enrollment as EnrollmentDocument;
   }
 
   // Update an enrollment by ID
-  async update(id: string, enrollmentData: any) {
-    return await prisma.enrollment.update({
+  async update(
+    id: string,
+    status: EnrollmentUpdateInput
+  ): Promise<EnrollmentDocument | null> {
+    const updatedEnrollment = await prisma.enrollment.update({
       where: { id },
-      data: enrollmentData,
+      data: status,
+      include: {
+        student: {
+          select: {
+            id: true,
+            fullName: true,
+            email: true,
+          },
+        },
+        course: {
+          select: {
+            id: true,
+            courseName: true,
+          },
+        },
+      },
     });
+    return updatedEnrollment as EnrollmentDocument;
   }
 
   // Delete an enrollment by ID
-  async delete(id: string) {
-    return await prisma.enrollment.delete({
+  async delete(id: string): Promise<EnrollmentDocument | null> {
+    const enrollment = await prisma.enrollment.delete({
       where: { id },
     });
+    return enrollment as EnrollmentDocument;
   }
 }
 export default new EnrollmentRepository();

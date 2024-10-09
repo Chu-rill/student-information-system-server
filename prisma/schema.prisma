@@ -43,7 +43,7 @@ model Enrollment {
   course         Course           @relation(fields: [courseId], references: [id])
   courseId       String
   enrollmentDate DateTime
-  status         EnrollmentStatus
+  status         EnrollmentStatus @default(ACTIVE)
   grades         Grade[]
 }
 

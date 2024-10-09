@@ -16,7 +16,7 @@ import {
   User,
 } from "../types/ResponseTypes";
 import { Role } from "@prisma/client";
-import { UserDocument, UserUpdateInput } from "../types/InputTypes";
+import { UserDocument, UserUpdateInput } from "../types/DBTypes";
 
 class UserService {
   async loginUser(
@@ -239,16 +239,11 @@ class UserService {
     | { status: string; message: string }
   > {
     try {
-      // console.log(`Received OTP: ${inputOTP}`);
       const user = await userRepository.findOTP(userId);
 
       if (!user) {
         throw new Error("OTP not found");
       }
-      // console.log(`OTP in DB: ${user.otp}`);
-      // console.log(`OTP expiration in DB: ${user.otpExpiration}`);
-
-      // Check if OTP is correct and not expired
 
       const isOTPValid =
         user.otp === inputOTP &&

@@ -1,6 +1,6 @@
-import { UserDocument } from "./InputTypes";
+import { EnrollmentDocument, UserDocument } from "./DBTypes";
 
-// Define various response types
+//User response
 export type LoginResponse = {
   status: string;
   error: boolean;
@@ -39,19 +39,56 @@ export type GetUserResponse = {
   message: string;
   data?: UserDocument | null;
 };
-// substitute for extend
 
 export type UserServiceResponse = {
   status: string;
-  statusCode: number; // Make statusCode optional
+  statusCode: number;
   message?: string;
   data?: any;
   error?: boolean;
 };
 
-// export interface UserDocument extends Document {
-//   username: string;
-//   email: string;
-//   password: string;
-//   _id: mongoose.Types.ObjectId;
-// }
+//Enrollment response
+export type CreateEnrollmentResponse = {
+  status: string;
+  error: boolean;
+  statusCode: number;
+  data: {
+    id: string;
+    enrollmentDate: Date;
+    status: string;
+    student: {
+      id: string;
+      fullName: string;
+      major: string;
+    };
+    course: {
+      id: string;
+      courseName: string;
+      courseDescription: string;
+    };
+  };
+};
+
+export type DeleteEnrollmentResponse = {
+  status: string;
+  error: boolean;
+  statusCode: number;
+  message: string;
+};
+
+export type GetEnrollmentResponse = {
+  status: string;
+  error: boolean;
+  statusCode: number;
+  message: string;
+  data?: EnrollmentDocument | null;
+};
+
+export type EnrollmentServiceResponse = {
+  status: string;
+  error?: boolean;
+  statusCode?: number;
+  message?: string;
+  data?: any;
+};

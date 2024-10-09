@@ -1,12 +1,15 @@
 import { Request, Response } from "express";
 import enrollmentService from "../service/enrollment.service";
+import { EnrollmentServiceResponse } from "../types/ResponseTypes";
 
 export const enrollmentController = {
   // Get all enrollments
   async getAllEnrollments(req: Request, res: Response): Promise<Response> {
     try {
-      const enrollments = await enrollmentService.getAllEnrollments();
-      return res.status(200).json({ status: "success", data: enrollments });
+      const response: EnrollmentServiceResponse =
+        await enrollmentService.getAllEnrollments();
+      const statusCode = response.statusCode ? response.statusCode : 200;
+      return res.status(statusCode).send(response);
     } catch (error) {
       console.error("Error fetching enrollments:", error);
       return res.status(500).json({ status: "error", message: "Server error" });
@@ -18,13 +21,10 @@ export const enrollmentController = {
     const { id } = req.params;
 
     try {
-      const enrollment = await enrollmentService.getEnrollment(id);
-      if (!enrollment) {
-        return res
-          .status(404)
-          .json({ status: "error", message: "Enrollment not found" });
-      }
-      return res.status(200).json({ status: "success", data: enrollment });
+      const response: EnrollmentServiceResponse =
+        await enrollmentService.getEnrollment(id);
+      const statusCode = response.statusCode ? response.statusCode : 200;
+      return res.status(statusCode).send(response);
     } catch (error) {
       console.error("Error fetching enrollment:", error);
       return res.status(500).json({ status: "error", message: "Server error" });
@@ -34,11 +34,15 @@ export const enrollmentController = {
   // Create a new enrollment
   async createEnrollment(req: Request, res: Response): Promise<Response> {
     try {
-      const enrollmentData = req.body; // Validate your input
-      const newEnrollment = await enrollmentService.createEnrollment(
-        enrollmentData
+      const { studentId, courseId, enrollmentDate, status } = req.body; // Validate your input
+      const response = await enrollmentService.createEnrollment(
+        studentId,
+        courseId,
+        new Date(enrollmentDate),
+        status
       );
-      return res.status(201).json({ status: "success", data: newEnrollment });
+      const statusCode = response.statusCode ? response.statusCode : 200;
+      return res.status(statusCode).send(response);
     } catch (error) {
       console.error("Error creating enrollment:", error);
       return res.status(500).json({ status: "error", message: "Server error" });
@@ -48,21 +52,13 @@ export const enrollmentController = {
   // Update an enrollment by ID
   async updateEnrollment(req: Request, res: Response): Promise<Response> {
     const { id } = req.params;
-    const enrollmentData = req.body;
+    const { status } = req.body;
 
     try {
-      const updatedEnrollment = await enrollmentService.updateEnrollment(
-        id,
-        enrollmentData
-      );
-      if (!updatedEnrollment) {
-        return res
-          .status(404)
-          .json({ status: "error", message: "Enrollment not found" });
-      }
-      return res
-        .status(200)
-        .json({ status: "success", data: updatedEnrollment });
+      const response: EnrollmentServiceResponse =
+        await enrollmentService.updateEnrollment(id, status);
+      const statusCode = response.statusCode ? response.statusCode : 200;
+      return res.status(statusCode).send(response);
     } catch (error) {
       console.error("Error updating enrollment:", error);
       return res.status(500).json({ status: "error", message: "Server error" });
@@ -74,15 +70,9 @@ export const enrollmentController = {
     const { id } = req.params;
 
     try {
-      const result = await enrollmentService.deleteEnrollment(id);
-      if (!result) {
-        return res
-          .status(404)
-          .json({ status: "error", message: "Enrollment not found" });
-      }
-      return res
-        .status(200)
-        .json({ status: "success", message: "Enrollment deleted" });
+      const response = await enrollmentService.deleteEnrollment(id);
+
+      return res.status(response.statusCode).send(response);
     } catch (error) {
       console.error("Error deleting enrollment:", error);
       return res.status(500).json({ status: "error", message: "Server error" });

@@ -5,7 +5,7 @@ import {
   Enrollment,
 } from "@prisma/client";
 const prisma = new PrismaClient();
-import { UserDocument, UserUpdateInput } from "../types/InputTypes";
+import { UserDocument, UserUpdateInput } from "../types/DBTypes";
 // Define the interface for the user data
 
 class UserRepository {
@@ -104,7 +104,6 @@ class UserRepository {
 
   // Delete a user by ID
   async delete(id: string): Promise<UserDocument | null> {
-    console.log(`User ID from request in repository: ${id}`);
     const user = await prisma.user.delete({
       where: { id },
     });
