@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import rateLimit from "express-rate-limit";
 import userRoutes from "./routes/user.routes";
 import authRoutes from "./routes/auth.routes";
+import enrollmentRoutes from "./routes/enrollment.routes";
 
 // Load environment variables
 dotenv.config();
@@ -43,6 +44,7 @@ app.get("/", async (req: Request, res: Response) => {
 
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/enroll", enrollmentRoutes);
 
 // Start server and connect to the database
 app.listen(port, () => {
