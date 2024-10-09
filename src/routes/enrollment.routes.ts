@@ -1,24 +1,43 @@
 import express from "express";
 import { enrollmentController } from "../controllers/enrollment.controller";
-import { authorizeChange, protect } from "../middleware/authorize"; // Optional if you want to protect routes
+import { authorizeChange, isAdmin, protect } from "../middleware/authorize";
+import { validateSchema } from "../middleware/ValidationMiddleware";
+import {
+  createEnrollmentValidation,
+  deleteEnrollmentValidation,
+  getEnrollmentValidation,
+  updateEnrollmentValidation,
+} from "../validation/enrollment.validation";
+const enrollmentRoutes = express.Router();
 
-const router = express.Router();
-
-// Define enrollment-related routes
-router.get("/", protect, enrollmentController.getAllEnrollments); // Get all enrollments
-router.get("/:id", protect, enrollmentController.getEnrollment); // Get a single enrollment by id
-router.post("/", protect, enrollmentController.createEnrollment); // Create a new enrollment
-router.put(
-  "/:id",
+enrollmentRoutes.get(
+  "/enrollments",
   protect,
-  authorizeChange,
+  enrollmentController.getAllEnrollments
+);
+enrollmentRoutes.get(
+  "/enrollment/:id",
+  validateSchema(getEnrollmentValidation),
+  protect,
+  enrollmentController.getEnrollment
+);
+enrollmentRoutes.post(
+  "/create-enrollment",
+  validateSchema(createEnrollmentValidation),
+  isAdmin,
+  enrollmentController.createEnrollment
+);
+enrollmentRoutes.put(
+  "/update-enrollment/:id",
+  validateSchema(updateEnrollmentValidation),
+  isAdmin,
   enrollmentController.updateEnrollment
-); // Update an enrollment
-router.delete(
-  "/:id",
-  protect,
-  authorizeChange,
+);
+enrollmentRoutes.delete(
+  "/delete-enrollment/:id",
+  validateSchema(deleteEnrollmentValidation),
+  isAdmin,
   enrollmentController.deleteEnrollment
-); // Delete an enrollment
+);
 
-export default router;
+export default enrollmentRoutes;

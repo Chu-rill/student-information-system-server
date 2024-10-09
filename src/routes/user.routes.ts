@@ -25,7 +25,6 @@ userRoutes.put(
 userRoutes.delete(
   "/delete-user/:id",
   validateSchema(deleteUserValidation),
-  protect,
   isAdmin,
   userController.deleteUser
 );

@@ -34,7 +34,7 @@ export const enrollmentController = {
   // Create a new enrollment
   async createEnrollment(req: Request, res: Response): Promise<Response> {
     try {
-      const { studentId, courseId, enrollmentDate, status } = req.body; // Validate your input
+      const { studentId, courseId, enrollmentDate, status } = req.body;
       const response = await enrollmentService.createEnrollment(
         studentId,
         courseId,
