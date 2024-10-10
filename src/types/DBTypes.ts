@@ -4,6 +4,8 @@ import {
   Enrollment,
   EnrollmentStatus,
   Grade,
+  Course,
+  CourseStatus,
 } from "@prisma/client";
 interface UserDocument extends PrismaUser {
   id: string;
@@ -62,9 +64,20 @@ interface EnrollmentUpdateInput {
   status?: EnrollmentStatus;
 }
 
+interface courseDocument extends Course {
+  id: string;
+  courseName: string;
+  courseDescription: string;
+  credits: number;
+  department: string;
+  enrollments: Enrollment[];
+  status: CourseStatus;
+}
+
 export {
   UserDocument,
   UserUpdateInput,
   EnrollmentDocument,
   EnrollmentUpdateInput,
+  courseDocument,
 };
