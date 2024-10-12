@@ -6,10 +6,9 @@ export const enrollmentController = {
   // Get all enrollments
   async getAllEnrollments(req: Request, res: Response): Promise<Response> {
     try {
-      const response: EnrollmentServiceResponse =
+      const response: EnrollmentServiceResponse | any =
         await enrollmentService.getAllEnrollments();
-      const statusCode = response.statusCode ? response.statusCode : 200;
-      return res.status(statusCode).send(response);
+      return res.status(response.statusCode).send(response);
     } catch (error) {
       console.error("Error fetching enrollments:", error);
       return res.status(500).json({ status: "error", message: "Server error" });
@@ -21,10 +20,9 @@ export const enrollmentController = {
     const { id } = req.params;
 
     try {
-      const response: EnrollmentServiceResponse =
+      const response: EnrollmentServiceResponse | any =
         await enrollmentService.getEnrollment(id);
-      const statusCode = response.statusCode ? response.statusCode : 200;
-      return res.status(statusCode).send(response);
+      return res.status(response.statusCode).send(response);
     } catch (error) {
       console.error("Error fetching enrollment:", error);
       return res.status(500).json({ status: "error", message: "Server error" });
@@ -35,14 +33,14 @@ export const enrollmentController = {
   async createEnrollment(req: Request, res: Response): Promise<Response> {
     try {
       const { studentId, courseId, enrollmentDate, status } = req.body;
-      const response = await enrollmentService.createEnrollment(
-        studentId,
-        courseId,
-        new Date(enrollmentDate),
-        status
-      );
-      const statusCode = response.statusCode ? response.statusCode : 200;
-      return res.status(statusCode).send(response);
+      const response: EnrollmentServiceResponse | any =
+        await enrollmentService.createEnrollment(
+          studentId,
+          courseId,
+          new Date(enrollmentDate),
+          status
+        );
+      return res.status(response.statusCode).send(response);
     } catch (error) {
       console.error("Error creating enrollment:", error);
       return res.status(500).json({ status: "error", message: "Server error" });
@@ -55,10 +53,9 @@ export const enrollmentController = {
     const { status } = req.body;
 
     try {
-      const response: EnrollmentServiceResponse =
+      const response: EnrollmentServiceResponse | any =
         await enrollmentService.updateEnrollment(id, status);
-      const statusCode = response.statusCode ? response.statusCode : 200;
-      return res.status(statusCode).send(response);
+      return res.status(response.statusCode).send(response);
     } catch (error) {
       console.error("Error updating enrollment:", error);
       return res.status(500).json({ status: "error", message: "Server error" });
@@ -70,7 +67,8 @@ export const enrollmentController = {
     const { id } = req.params;
 
     try {
-      const response = await enrollmentService.deleteEnrollment(id);
+      const response: EnrollmentServiceResponse | any =
+        await enrollmentService.deleteEnrollment(id);
 
       return res.status(response.statusCode).send(response);
     } catch (error) {

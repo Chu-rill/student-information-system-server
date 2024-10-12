@@ -1,4 +1,4 @@
-import { EnrollmentDocument, UserDocument } from "./DBTypes";
+import { courseDocument, EnrollmentDocument, UserDocument } from "./DBTypes";
 
 //User response
 export type LoginResponse = {
@@ -91,4 +91,40 @@ export type EnrollmentServiceResponse = {
   statusCode?: number;
   message?: string;
   data?: any;
+};
+
+export type CreateCourseResponse = {
+  status: string;
+  error: boolean;
+  statusCode: number;
+  data: {
+    id: string;
+    courseName: string;
+    courseDescription: string;
+    credits: number;
+    department: string;
+  };
+};
+
+export type GetCourseResponse = {
+  status: string;
+  error: boolean;
+  statusCode: number;
+  message: string;
+  data?: courseDocument | null;
+};
+
+export type DeleteCourseResponse = {
+  status: string;
+  error: boolean;
+  statusCode: number;
+  message: string;
+};
+
+export type CourseServiceResponse = {
+  status: string;
+  statusCode: number;
+  message?: string;
+  data?: any;
+  error?: boolean;
 };

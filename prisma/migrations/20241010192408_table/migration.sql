@@ -2,10 +2,7 @@
 CREATE TYPE "Role" AS ENUM ('STUDENT', 'ADMIN');
 
 -- CreateEnum
-CREATE TYPE "EnrollmentStatus" AS ENUM ('ACTIVE', 'DROPPED', 'COMPLETED');
-
--- CreateEnum
-CREATE TYPE "CourseStatus" AS ENUM ('APPROVED', 'PENDING');
+CREATE TYPE "EnrollmentStatus" AS ENUM ('ACTIVE', 'DROPPED', 'COMPLETED', 'PENDING');
 
 -- CreateTable
 CREATE TABLE "User" (
@@ -31,7 +28,7 @@ CREATE TABLE "Enrollment" (
     "studentId" TEXT NOT NULL,
     "courseId" TEXT NOT NULL,
     "enrollmentDate" TIMESTAMP(3) NOT NULL,
-    "status" "EnrollmentStatus" NOT NULL,
+    "status" "EnrollmentStatus" NOT NULL DEFAULT 'PENDING',
 
     CONSTRAINT "Enrollment_pkey" PRIMARY KEY ("id")
 );
@@ -43,7 +40,6 @@ CREATE TABLE "Course" (
     "courseDescription" TEXT,
     "credits" INTEGER NOT NULL,
     "department" TEXT NOT NULL,
-    "status" "CourseStatus" NOT NULL DEFAULT 'PENDING',
 
     CONSTRAINT "Course_pkey" PRIMARY KEY ("id")
 );

@@ -43,7 +43,7 @@ model Enrollment {
   course         Course           @relation(fields: [courseId], references: [id])
   courseId       String
   enrollmentDate DateTime
-  status         EnrollmentStatus @default(ACTIVE)
+  status         EnrollmentStatus @default(PENDING)
   grades         Grade[]
 }
 
@@ -52,6 +52,7 @@ enum EnrollmentStatus {
   ACTIVE
   DROPPED
   COMPLETED
+  PENDING // New value to add
 }
 
 // Course Model
@@ -62,12 +63,6 @@ model Course {
   credits           Int
   department        String
   enrollments       Enrollment[]
-  status            CourseStatus @default(PENDING)
-}
-
-enum CourseStatus {
-  APPROVED
-  PENDING
 }
 
 // Grade Model
