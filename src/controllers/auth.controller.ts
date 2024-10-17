@@ -6,6 +6,7 @@ import {
   CreateUserResponse,
   UserServiceResponse,
 } from "../types/ResponseTypes";
+// import logger from "../utils/logger";
 
 class AuthController {
   async login(req: Request, res: Response): Promise<Response> {
@@ -20,6 +21,7 @@ class AuthController {
   }
 
   async signup(req: Request, res: Response): Promise<Response> {
+    // logger.log("proccesing signup request")
     const { fullName, password, email, dateOfBirth, phoneNumber, major, role } =
       req.body;
 
@@ -57,10 +59,13 @@ class AuthController {
       // Await the email sending process
       await emailService.sendEmailWithTemplate(email, data);
 
+      // logger.log("signup request completed ")
+
       // Return successful response
       return res.status(response.statusCode).send(response);
     } catch (err) {
       console.error("Signup error:", err);
+      // logger.log("error occured whiile proccsing sign up requset server error ")
       return res.status(500).json({ message: "Internal server error" });
     }
   }

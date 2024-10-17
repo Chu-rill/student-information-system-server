@@ -17,6 +17,7 @@ import {
 } from "../types/ResponseTypes";
 import { Role } from "@prisma/client";
 import { UserDocument, UserUpdateInput } from "../types/DBTypes";
+import { logger } from "../utils/logger";
 
 class UserService {
   async loginUser(
@@ -75,6 +76,7 @@ class UserService {
     CreateUserResponse | typeof noDuplicateError | typeof defaultError
   > {
     try {
+      logger.info("Request to create a user");
       const existingUser = await userRepository.findByEmail(email);
       if (existingUser) return noDuplicateError;
       const trimmedFullName = fullName.trim();
@@ -109,6 +111,7 @@ class UserService {
       };
     } catch (error) {
       console.error(error);
+
       return defaultError;
     }
   }

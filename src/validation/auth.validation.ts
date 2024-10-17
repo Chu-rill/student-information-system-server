@@ -52,11 +52,6 @@ export const login = Joi.object({
 
 // validateOTP validator schema
 export const validateOTP = Joi.object({
-  id: Joi.string().required().messages({
-    "string.base": "ID must be a string",
-    "string.empty": "ID is required",
-    "any.required": "ID is a required field",
-  }),
   OTP: Joi.number().required().messages({
     "number.base": "OTP must be a number",
     "number.empty": "OTP is required",
