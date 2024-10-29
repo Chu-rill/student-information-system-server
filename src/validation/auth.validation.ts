@@ -61,11 +61,11 @@ export const validateOTP = Joi.object({
 
 // ResetPassword validator schema
 export const ResetPassword = Joi.object({
-  id: Joi.string().required().messages({
-    "string.base": "ID must be a string",
-    "string.empty": "ID is required",
-    "any.required": "ID is a required field",
-  }),
+    id: Joi.string().required().messages({
+      "string.base": "ID must be a string",
+      "string.empty": "ID is required",
+      "any.required": "ID is a required field",
+    }),
   email: Joi.string().email().required().messages({
     "string.base": "Email must be a string",
     "string.empty": "Email is required",

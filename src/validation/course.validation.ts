@@ -17,11 +17,6 @@ export const getCourseValidation = Joi.object({
 });
 
 export const updateCourseValidation = Joi.object({
-  id: Joi.string().required().messages({
-    "string.base": "ID must be a string",
-    "string.empty": "ID is required",
-    "any.required": "ID is a required field",
-  }),
   courseName: Joi.string().optional().messages({
     "string.base": "courseName must be a string",
     "string.empty": "courseName is required",

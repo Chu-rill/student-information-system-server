@@ -46,7 +46,7 @@ app.get("/", async (req: Request, res: Response) => {
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/enroll", enrollmentRoutes);
-app.use("/api/v1/enroll", courseRoutes);
+app.use("/api/v1/course", courseRoutes);
 
 // Start server and connect to the database
 app.listen(port, () => {

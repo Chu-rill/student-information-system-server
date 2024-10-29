@@ -59,7 +59,7 @@ class CourseService {
         status: "success",
         error: false,
         statusCode: httpStatus.OK,
-        message: "User retrieved successfully",
+        message: "Course retrieved successfully",
         data: course,
       };
     } catch (error) {

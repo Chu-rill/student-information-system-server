@@ -16,12 +16,7 @@ courseRoutes.post(
   isAdmin,
   courseController.createCourse
 );
-courseRoutes.get(
-  "/course/:id",
-  validateSchema(getCourseValidation),
-  protect,
-  courseController.getCourseById
-);
+courseRoutes.get("/course/:id", protect, courseController.getCourseById);
 courseRoutes.get("/courses", protect, courseController.getAllCourses);
 courseRoutes.put(
   "/update-course/:id",
@@ -31,7 +26,6 @@ courseRoutes.put(
 );
 courseRoutes.delete(
   "/delete-courses/:id",
-  validateSchema(deleteCourseValidation),
   isAdmin,
   courseController.deleteCourse
 );
