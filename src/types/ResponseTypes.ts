@@ -53,6 +53,7 @@ export type CreateEnrollmentResponse = {
   status: string;
   error: boolean;
   statusCode: number;
+  message: string;
   data: {
     id: string;
     enrollmentDate: Date;
@@ -61,12 +62,12 @@ export type CreateEnrollmentResponse = {
       id: string;
       fullName: string;
       major: string;
-    };
+    } | null;
     course: {
       id: string;
       courseName: string;
       courseDescription: string;
-    };
+    } | null;
   };
 };
 

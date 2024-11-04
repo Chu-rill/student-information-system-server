@@ -85,6 +85,13 @@ class EnrollmentRepository {
         courseId, // Foreign key to the Course model
         enrollmentDate,
         status,
+        grades: {
+          create: [],
+        },
+      },
+      include: {
+        student: true, // Include student data
+        course: true, // Include course data
       },
     });
 
@@ -117,6 +124,34 @@ class EnrollmentRepository {
     });
     return updatedEnrollment as EnrollmentDocument;
   }
+
+  // async update(
+  //   id: string,
+  //   status: EnrollmentUpdateInput
+  // ): Promise<EnrollmentDocument | null> {
+  //   // Ensure `status` is an object with the correct property
+  //   console.log("Updating enrollment status:", status);
+  //   const updatedEnrollment = await prisma.enrollment.update({
+  //     where: { id },
+  //     data: { status.st }, // Access `status` property inside `status` object
+  //     include: {
+  //       student: {
+  //         select: {
+  //           id: true,
+  //           fullName: true,
+  //           email: true,
+  //         },
+  //       },
+  //       course: {
+  //         select: {
+  //           id: true,
+  //           courseName: true,
+  //         },
+  //       },
+  //     },
+  //   });
+  //   return updatedEnrollment as EnrollmentDocument;
+  // }
 
   // Delete an enrollment by ID
   async delete(id: string): Promise<EnrollmentDocument | null> {

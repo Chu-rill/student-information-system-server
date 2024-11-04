@@ -17,11 +17,6 @@ export const getEnrollmentValidation = Joi.object({
 });
 
 export const updateEnrollmentValidation = Joi.object({
-  id: Joi.string().required().messages({
-    "string.base": "ID must be a string",
-    "string.empty": "ID is required",
-    "any.required": "ID is a required field",
-  }),
   status: Joi.string().required().messages({
     "string.base": "status must be a string",
     "string.empty": "status is required",

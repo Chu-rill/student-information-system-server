@@ -89,16 +89,20 @@ class EnrollmentService {
           id: enrollment.id,
           enrollmentDate: enrollment.enrollmentDate,
           status: enrollment.status,
-          student: {
-            id: enrollment.student.id,
-            fullName: enrollment.student.fullName,
-            major: enrollment.student.major,
-          },
-          course: {
-            id: enrollment.course.id,
-            courseName: enrollment.course.courseName,
-            courseDescription: enrollment.course.courseDescription,
-          },
+          student: enrollment.student
+            ? {
+                id: enrollment.student.id,
+                fullName: enrollment.student.fullName,
+                major: enrollment.student.major,
+              }
+            : null,
+          course: enrollment.course
+            ? {
+                id: enrollment.course.id,
+                courseName: enrollment.course.courseName,
+                courseDescription: enrollment.course.courseDescription,
+              }
+            : null,
         },
       };
     } catch (error) {

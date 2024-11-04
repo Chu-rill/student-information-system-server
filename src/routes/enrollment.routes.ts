@@ -29,13 +29,11 @@ enrollmentRoutes.post(
 );
 enrollmentRoutes.put(
   "/update-enrollment/:id",
-  validateSchema(updateEnrollmentValidation),
   isAdmin,
   enrollmentController.updateEnrollment
 );
 enrollmentRoutes.delete(
   "/delete-enrollment/:id",
-  validateSchema(deleteEnrollmentValidation),
   isAdmin,
   enrollmentController.deleteEnrollment
 );

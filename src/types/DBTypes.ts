@@ -44,7 +44,7 @@ interface EnrollmentDocument extends Enrollment {
   courseId: string;
   enrollmentDate: Date;
   status: EnrollmentStatus;
-  grades: Grade[];
+  grades?: Grade[];
   student: {
     id: string;
     fullName: string;
@@ -60,7 +60,7 @@ interface EnrollmentDocument extends Enrollment {
   };
 }
 interface EnrollmentUpdateInput {
-  status?: EnrollmentStatus;
+  status: EnrollmentStatus;
 }
 
 interface courseDocument extends Course {
@@ -78,6 +78,13 @@ interface courseUpdateInput {
   credits?: number;
   department?: string;
 }
+interface gradeDocument extends Grade {
+  id: string;
+  enrollment: Enrollment[];
+  enrollmentId: string;
+  grade: string;
+  gradeDate: Date;
+}
 export {
   UserDocument,
   UserUpdateInput,
@@ -85,4 +92,5 @@ export {
   EnrollmentUpdateInput,
   courseDocument,
   courseUpdateInput,
+  gradeDocument,
 };
